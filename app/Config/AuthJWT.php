@@ -39,8 +39,13 @@ class AuthJWT extends ShieldAuthJWT
         // Ensure JWT issuer matches dynamic base url of the application
         $this->defaultClaims['iss'] = base_url();
 
-        // Retrieve secret key from environment or use a secure default for development
-        $secretKey = env('JWT_SECRET') ?: 'spmb_vibe_super_secure_jwt_secret_key_1234567890!';
+        // Secret wajib berasal dari environment/.env; jangan simpan fallback di kode.
+        $secretKey = env('JWT_SECRET');
+        $secretKey = is_string($secretKey) ? trim($secretKey) : $secretKey;
+
+        if (! is_string($secretKey) || strlen($secretKey) < 32) {
+            throw new \RuntimeException('JWT_SECRET wajib diisi di .env dengan minimal 32 karakter.');
+        }
 
         $this->keys = [
             'default' => [

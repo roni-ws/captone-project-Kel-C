@@ -180,8 +180,10 @@
 
                         <div class="flex flex-col gap-xs">
                             <label class="font-label-bold text-body-sm text-on-surface" for="edit-nama_sekolah">Nama Sekolah Asal <span class="text-error">*</span></label>
-                            <input class="w-full px-sm py-3 border border-outline rounded-lg bg-surface font-body-md text-body-md text-on-surface focus:border-primary focus:ring-2 focus:ring-tertiary-fixed-dim/30 transition-all"
-                                   id="edit-nama_sekolah" name="nama_sekolah" required type="text"/>
+                            <input type="hidden" id="edit-sekolah_id" name="sekolah_id" value="">
+                            <input type="hidden" id="edit-npsn" name="npsn" value="">
+                            <input type="hidden" id="edit-nama_sekolah_value" name="nama_sekolah" value="">
+                            <select id="edit-nama_sekolah" class="w-full" placeholder="Ketik nama sekolah..."></select>
                         </div>
 
                         <div class="flex flex-col gap-xs">

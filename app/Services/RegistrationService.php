@@ -141,7 +141,15 @@ class RegistrationService
 
     public function createManualStudent(array $data, array $files): int
     {
-        $sekolahId = $this->sekolahModel->getOrCreateSekolahId($data['nama_sekolah']);
+        $sekolahId = $this->sekolahModel->resolveExistingId(
+            isset($data['sekolah_id']) ? (int) $data['sekolah_id'] : null,
+            isset($data['npsn']) ? (string) $data['npsn'] : null,
+            (string) ($data['nama_sekolah'] ?? '')
+        );
+
+        if ($sekolahId === null) {
+            $sekolahId = $this->sekolahModel->getOrCreateByName((string) ($data['nama_sekolah'] ?? ''), 'admin');
+        }
 
         $this->siswaModel->insert([
             'nisn'               => $data['nisn'],

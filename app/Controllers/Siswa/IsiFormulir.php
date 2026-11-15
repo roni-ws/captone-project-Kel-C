@@ -90,7 +90,8 @@ class IsiFormulir extends BaseController
         if ($sekolah && $sekolah['nama_sekolah'] === DEFAULT_SEKOLAH) {
             $sekolah['nama_sekolah'] = '';
         }
-        
+
+        $sekolah['npsn']           = $sekolah['npsn'] ?? '';
         $sekolah['alamat_sekolah'] = $biodata['alamat_sekolah'] ?? '';
         if ($sekolah['alamat_sekolah'] === DEFAULT_SEKOLAH) {
             $sekolah['alamat_sekolah'] = '';
@@ -113,11 +114,15 @@ class IsiFormulir extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        $sekolahIdInput = $this->request->getPost('sekolah_id');
+
         try {
             $this->formulirService->updateSekolah(
                 $biodata['id'],
-                $this->request->getPost('nama_sekolah'),
-                $this->request->getPost('alamat_sekolah')
+                is_numeric($sekolahIdInput) ? (int) $sekolahIdInput : null,
+                $this->request->getPost('npsn'),
+                (string) $this->request->getPost('nama_sekolah'),
+                (string) $this->request->getPost('alamat_sekolah')
             );
         } catch (\RuntimeException $e) {
             return redirect()->back()->withInput()->with('error', $e->getMessage());

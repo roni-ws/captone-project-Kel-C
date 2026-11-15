@@ -61,6 +61,13 @@
                 <span class="material-symbols-outlined" style="font-variation-settings:'FILL' <?= $isSettings ? '1' : '0' ?>">settings</span>
                 Pengaturan
             </a>
+
+            <a href="<?= base_url('admin/sekolah') ?>"
+               class="sidebar-link flex items-center gap-sm rounded-xl px-sm py-3 transition-all
+                      <?= $isSekolah ? 'bg-secondary-container text-on-secondary-container font-bold' : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high' ?>">
+                <span class="material-symbols-outlined" style="font-variation-settings:'FILL' <?= $isSekolah ? '1' : '0' ?>">school</span>
+                Data Sekolah Asal
+            </a>
         <?php endif; ?>
 
         <div class="mt-auto pt-md border-t border-outline-variant">

@@ -64,7 +64,9 @@ class StudentService
             calon_siswa.alamat_kecamatan,
             calon_siswa.alamat_kabupaten,
             calon_siswa.alamat_sekolah,
+            calon_siswa.sekolah_id,
             master_sekolah.nama_sekolah,
+            master_sekolah.npsn,
             kelengkapan_administrasi.pas_foto,
             kelengkapan_administrasi.fc_ijazah_skl,
             kelengkapan_administrasi.fc_kk,
@@ -154,7 +156,9 @@ class StudentService
                 calon_siswa.alamat_kecamatan,
                 calon_siswa.alamat_kabupaten,
                 calon_siswa.alamat_sekolah,
+                calon_siswa.sekolah_id,
                 master_sekolah.nama_sekolah,
+                master_sekolah.npsn,
                 kelengkapan_administrasi.pas_foto,
                 kelengkapan_administrasi.fc_ijazah_skl,
                 kelengkapan_administrasi.fc_kk,
@@ -400,7 +404,15 @@ class StudentService
 
     public function updateStudent(int $userId, array $data): bool
     {
-        $sekolahId = $this->sekolahModel->getOrCreateSekolahId($data['nama_sekolah']);
+        $sekolahId = $this->sekolahModel->resolveExistingId(
+            isset($data['sekolah_id']) ? (int) $data['sekolah_id'] : null,
+            isset($data['npsn']) ? (string) $data['npsn'] : null,
+            (string) ($data['nama_sekolah'] ?? '')
+        );
+
+        if ($sekolahId === null) {
+            $sekolahId = $this->sekolahModel->getOrCreateByName((string) ($data['nama_sekolah'] ?? ''), 'admin');
+        }
 
         $result = $this->siswaModel->update($userId, [
             'nama_lengkap'       => $data['nama_lengkap'],

@@ -97,9 +97,9 @@ $(document).ready(function() {
             }
 
             // Make pagination style match material components
-            $('#dt-paginate-wrapper span a').addClass('px-3 py-1.5 rounded-lg border border-outline-variant/60 hover:bg-surface-container text-body-sm font-semibold transition-all');
-            $('#dt-paginate-wrapper span a.current').addClass('bg-primary text-on-primary border-primary hover:bg-primary').removeClass('hover:bg-surface-container');
-            $('#dt-paginate-wrapper > div > a').addClass('p-1.5 rounded-lg border border-outline-variant/60 hover:bg-surface-container transition-all flex items-center');
+            $('#dt-paginate-wrapper span a').addClass('px-3 py-1.5 rounded-xl border border-outline-variant/60 hover:bg-surface-container-low text-body-sm font-semibold transition-all');
+            $('#dt-paginate-wrapper span a.current').addClass('bg-primary text-on-primary border-primary hover:bg-primary').removeClass('hover:bg-surface-container-low');
+            $('#dt-paginate-wrapper > div > a').addClass('p-1.5 rounded-xl border border-outline-variant/60 hover:bg-surface-container-low transition-all flex items-center');
 
             // Update information label
             const info = this.api().page.info();

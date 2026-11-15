@@ -60,8 +60,10 @@ class Validation extends BaseConfig
     ];
 
     public array $siswaSekolah = [
-        'nama_sekolah'   => 'required|min_length[3]',
-        'alamat_sekolah' => 'required|min_length[5]',
+        'nama_sekolah'   => 'required|min_length[3]|max_length[150]',
+        'alamat_sekolah' => 'required|min_length[5]|max_length[500]',
+        'sekolah_id'     => 'permit_empty|is_natural_no_zero',
+        'npsn'           => 'permit_empty|numeric|exact_length[8]',
     ];
 
     public array $siswaOrangTua = [
@@ -84,8 +86,10 @@ class Validation extends BaseConfig
         'alamat_desa'      => 'required|min_length[3]|max_length[100]',
         'alamat_kecamatan' => 'required|min_length[3]|max_length[100]',
         'alamat_kabupaten' => 'required|min_length[3]|max_length[100]',
-        'nama_sekolah'     => 'required|min_length[3]|max_length[100]',
-        'alamat_sekolah'   => 'required|min_length[5]',
+        'nama_sekolah'     => 'required|min_length[3]|max_length[150]',
+        'alamat_sekolah'   => 'required|min_length[5]|max_length[500]',
+        'sekolah_id'       => 'permit_empty|is_natural_no_zero',
+        'npsn'             => 'permit_empty|numeric|exact_length[8]',
         'nama_ayah'        => 'required|min_length[3]|max_length[150]',
         'pekerjaan_ayah'   => 'required|min_length[3]',
         'nama_ibu'         => 'required|min_length[3]|max_length[150]',

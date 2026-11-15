@@ -133,8 +133,6 @@ cookie_*.txt
 
 # Scratch dev files
 scratch/
-_unused_files/
-_unused_file/
 
 # Dependencies
 node_modules/

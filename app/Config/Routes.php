@@ -100,6 +100,16 @@ $routes->group('admin', ['filter' => 'group:admin,panitia'], static function ($r
         $routes->post('save', 'Admin\Settings::save');
     });
 
+    // Rute Data Sekolah Asal (impor data induk, koreksi, dan hapus entri)
+    $routes->group('sekolah', ['filter' => 'group:admin'], static function ($routes) {
+        $routes->get('/', 'Admin\Sekolah::index');
+        $routes->get('template', 'Admin\Sekolah::downloadTemplate');
+        $routes->post('import', 'Admin\Sekolah::import');
+        $routes->post('update/(:num)', 'Admin\Sekolah::update/$1');
+        $routes->post('delete/(:num)', 'Admin\Sekolah::delete/$1');
+        $routes->post('bulk-delete', 'Admin\Sekolah::bulkDelete');
+    });
+
     // Rute Manajemen Pengumuman & WhatsApp (Admin & Panitia)
     $routes->group('pengumuman', ['filter' => 'group:admin,panitia'], static function ($routes) {
         $routes->get('/', 'Admin\Pengumuman::index');

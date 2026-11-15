@@ -12,6 +12,7 @@ $isExport     = str_contains($currentUri, 'export');
 $isSettings   = str_starts_with($currentUri, 'admin/settings');
 $isUsers      = str_starts_with($currentUri, 'admin/users') || str_starts_with($currentUri, 'admin/profile-settings');
 $isPengumuman = str_contains($currentUri, 'pengumuman');
+$isSekolah    = str_starts_with($currentUri, 'admin/sekolah');
 
 $headTitleSuffix = 'Admin | ' . esc($logoText);
 ?>

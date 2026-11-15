@@ -45,17 +45,45 @@ class Login extends BaseController
 
         $identifier = $this->request->getPost('identifier');
         $password   = $this->request->getPost('password');
+        $role       = $this->request->getPost('role');
         $remember   = (bool) $this->request->getPost('remember');
 
-        if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
-            $credentials = ['email' => $identifier, 'password' => $password];
-        } elseif (ctype_digit($identifier)) {
-            $credentials = ['nisn' => $identifier, 'password' => $password];
-        } else {
-            $credentials = ['username' => $identifier, 'password' => $password];
+        if (! is_string($identifier) || ! is_string($password) || ! is_string($role)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Data login tidak valid. Silakan coba lagi.');
         }
 
-        $result = auth()->attempt($credentials, $remember);
+        $identifier = trim($identifier);
+        $role       = strtolower(trim($role));
+
+        if ($identifier === '') {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Email atau username wajib diisi.');
+        }
+
+        if (! in_array($role, ['student', 'admin'], true)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Peran login tidak valid. Silakan pilih Calon Siswa atau Panitia / Admin.');
+        }
+
+        if (filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+            $credentials = ['email' => $identifier, 'password' => $password, 'role' => $role];
+        } elseif (ctype_digit($identifier)) {
+            $credentials = ['nisn' => $identifier, 'password' => $password, 'role' => $role];
+        } else {
+            $credentials = ['username' => $identifier, 'password' => $password, 'role' => $role];
+        }
+
+        $authenticator = auth()->getAuthenticator();
+
+        if ($remember) {
+            $authenticator->remember(true);
+        }
+
+        $result = $authenticator->attempt($credentials);
 
         if (! $result->isOK()) {
             return redirect()->back()

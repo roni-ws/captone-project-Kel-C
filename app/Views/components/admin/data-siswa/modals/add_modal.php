@@ -209,10 +209,15 @@
                         <div class="flex flex-col gap-xs">
                             <label class="font-label-bold text-body-sm text-on-surface" for="add-sekolah">Nama Sekolah Asal <span class="text-error">*</span></label>
                             <div class="relative">
-                                <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline-variant pointer-events-none" style="font-size: 20px;">school</span>
-                                <input class="w-full pl-10 pr-sm py-3 border border-outline rounded-lg bg-surface font-body-md text-body-md text-on-surface placeholder:text-outline-variant focus:border-primary focus:ring-2 focus:ring-tertiary-fixed-dim/30 transition-all" 
-                                       id="add-sekolah" name="nama_sekolah" placeholder="Contoh: SMP Negeri 1 Jakarta" required type="text"/>
+                                <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline-variant pointer-events-none z-10" style="font-size: 20px;">school</span>
+                                <input type="hidden" id="add-sekolah_id" name="sekolah_id" value="">
+                                <input type="hidden" id="add-npsn" name="npsn" value="">
+                                <input type="hidden" id="add-nama_sekolah_value" name="nama_sekolah" value="">
+                                <select id="add-sekolah" class="w-full" placeholder="Ketik nama sekolah..." required></select>
                             </div>
+                            <p class="font-caption text-caption text-on-surface-variant">
+                                Ketik minimal 3 karakter. Nama yang belum terdaftar dapat ditambahkan langsung.
+                            </p>
                         </div>
 
                         <!-- Alamat Sekolah Asal -->
@@ -221,7 +226,7 @@
                             <div class="relative">
                                 <span class="material-symbols-outlined absolute left-sm top-4 text-outline-variant pointer-events-none" style="font-size: 20px;">location_on</span>
                                 <textarea class="w-full pl-10 pr-sm py-3 border border-outline rounded-lg bg-surface font-body-md text-body-md text-on-surface placeholder:text-outline-variant focus:border-primary focus:ring-2 focus:ring-tertiary-fixed-dim/30 transition-all min-h-[100px]" 
-                                          id="add-alamat_sekolah" name="alamat_sekolah" placeholder="Nama jalan, kota/kabupaten, dan provinsi sekolah asal" required></textarea>
+                                          id="add-alamat_sekolah" name="alamat_sekolah" placeholder="Nama jalan, kelurahan, kecamatan, kabupaten, dan provinsi sekolah asal" required></textarea>
                             </div>
                         </div>
                     </div>

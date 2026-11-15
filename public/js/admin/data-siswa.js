@@ -1,9 +1,13 @@
 /* ── Set untuk menyimpan ID student terpilih (lintas halaman) ── */
 const selectedStudentIds = new Set();
 let gridSiswa = null;
+let addSekolahSelect = null;
+let editSekolahSelect = null;
 
 /* ── Grid.js Init ──────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', function () {
+    initSekolahAutocomplete();
+
     const avatarColors = [
         'bg-primary-container text-on-primary-container',
         'bg-secondary-container text-on-secondary-container',
@@ -351,7 +355,7 @@ function openEditModal(d) {
         'nama_lengkap', 'nik', 'no_kk', 'tempat_lahir', 'tanggal_lahir',
         'no_hp', 'anak_ke', 'jumlah_saudara',
         'alamat_desa', 'alamat_kecamatan', 'alamat_kabupaten',
-        'nama_sekolah', 'alamat_sekolah',
+        'alamat_sekolah',
         'nama_ayah', 'pekerjaan_ayah', 'nama_ibu', 'pekerjaan_ibu'
     ];
 
@@ -359,6 +363,8 @@ function openEditModal(d) {
         const el = document.getElementById('edit-' + name);
         if (el) el.value = d[name] ?? '';
     });
+
+    setEditSekolahValue(d.sekolah_id, d.nama_sekolah, d.npsn);
 
     const gender = d.jenis_kelamin === 'P' ? 'P' : 'L';
     document.querySelectorAll('#edit-form input[name="jenis_kelamin"]').forEach(function (radio) {
@@ -478,6 +484,7 @@ const totalAddSteps = 4;
 function openAddModal() {
     document.querySelectorAll('[id^="menu-"]').forEach(function (m) { m.classList.add('hidden'); });
     document.getElementById('add-form').reset();
+    resetAddSekolahValue();
     currentAddStep = 1;
     updateAddStepper();
     document.getElementById('add-modal').style.display = 'flex';
@@ -583,3 +590,165 @@ function addPrevStep() {
 document.getElementById('add-modal')?.addEventListener('click', function (e) {
     if (e.target === this) closeAddModal();
 });
+
+/* -- Autocomplete Sekolah (TomSelect) ----------------------- */
+function sekolahApiUrl() {
+    var base = window.BASE_URL || '/';
+    if (!base.endsWith('/')) base += '/';
+    return base + 'api/sekolah/search';
+}
+
+function initSekolahAutocomplete() {
+    if (typeof TomSelect === 'undefined') return;
+
+    var addField = document.getElementById('add-sekolah');
+    if (addField) {
+        addSekolahSelect = new TomSelect(addField, buildSekolahConfig('add', true));
+    }
+
+    var editField = document.getElementById('edit-nama_sekolah');
+    if (editField) {
+        editSekolahSelect = new TomSelect(editField, buildSekolahConfig('edit', true));
+    }
+}
+
+function buildSekolahConfig(prefix, autoFillAddress) {
+    return {
+        valueField: 'id',
+        labelField: 'text',
+        searchField: 'text',
+        create: true,
+        maxItems: 1,
+        maxOptions: 30,
+        preload: false,
+        openOnFocus: true,
+        loadThrottle: 300,
+        placeholder: 'Ketik nama sekolah...',
+        load: function (query, callback) {
+            if (query.trim().length < 3) {
+                callback();
+                return;
+            }
+
+            fetch(sekolahApiUrl() + '?q=' + encodeURIComponent(query), {
+                headers: { 'Accept': 'application/json' }
+            })
+                .then(function (response) {
+                    if (!response.ok) throw new Error('Permintaan gagal');
+                    return response.json();
+                })
+                .then(function (json) {
+                    callback(Array.isArray(json) ? json : []);
+                })
+                .catch(function () {
+                    callback();
+                });
+        },
+        onChange: function (value) {
+            var nameField = document.getElementById(prefix + '-nama_sekolah_value');
+            var idField = document.getElementById(prefix + '-sekolah_id');
+            var npsnField = document.getElementById(prefix + '-npsn');
+
+            if (!value) {
+                if (nameField) nameField.value = '';
+                if (idField) idField.value = '';
+                if (npsnField) npsnField.value = '';
+                return;
+            }
+
+            var option = this.options[value];
+
+            if (option && option.record_id) {
+                if (nameField) nameField.value = option.text || option.value || '';
+                if (idField) idField.value = option.record_id;
+                if (npsnField) npsnField.value = option.npsn || '';
+
+                if (autoFillAddress && option.alamat_lengkap) {
+                    var alamatField = document.getElementById(prefix + '-alamat_sekolah');
+                    if (alamatField) {
+                        // Ikuti alamat sekolah yang dipilih agar tidak tertinggal dari pilihan sebelumnya.
+                        alamatField.value = option.alamat_lengkap;
+                    }
+                }
+            } else {
+                if (nameField) nameField.value = value;
+                if (idField) idField.value = '';
+                if (npsnField) npsnField.value = '';
+            }
+        },
+        render: {
+            option: function (data, escape) {
+                var label = data.text || data.value || '';
+                var detail = [data.kecamatan, data.kabupaten].filter(Boolean).join(' - ');
+
+                var html = '<div class="py-2 px-2 leading-tight">';
+                html += '<div class="font-semibold text-on-surface">' + escape(label) + '</div>';
+                if (detail) {
+                    html += '<div class="text-xs text-on-surface-variant mt-0.5">' + escape(detail) + '</div>';
+                }
+                if (data.npsn) {
+                    html += '<div class="text-[11px] text-outline mt-0.5">NPSN ' + escape(String(data.npsn)) + '</div>';
+                }
+                return html + '</div>';
+            },
+            item: function (data, escape) {
+                return '<div>' + escape(data.text || data.value || '') + '</div>';
+            },
+            option_create: function (data, escape) {
+                return '<div class="create p-2 cursor-pointer bg-primary/10 text-primary font-semibold rounded-md mx-1 my-1 hover:bg-primary hover:text-white transition-colors">'
+                    + 'Tambahkan sekolah baru "<strong>' + escape(data.input) + '</strong>"'
+                    + '</div>';
+            },
+            no_results: function (data, escape) {
+                return '<div class="no-results p-2 text-on-surface-variant italic">'
+                    + 'Sekolah tidak ditemukan. Ketik nama lengkap lalu pilih opsi menambahkan sekolah baru.'
+                    + '</div>';
+            }
+        }
+    };
+}
+
+function resetAddSekolahValue() {
+    ['add-sekolah_id', 'add-npsn', 'add-nama_sekolah_value'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+
+    if (addSekolahSelect) {
+        addSekolahSelect.clear(true);
+    }
+}
+
+function setEditSekolahValue(sekolahId, namaSekolah, npsn) {
+    var idField = document.getElementById('edit-sekolah_id');
+    var npsnField = document.getElementById('edit-npsn');
+    var nameField = document.getElementById('edit-nama_sekolah_value');
+
+    var nama = namaSekolah || '';
+
+    if (nama === 'Belum Diisi') nama = '';
+
+    if (idField) idField.value = nama === '' ? '' : (sekolahId || '');
+    if (npsnField) npsnField.value = nama === '' ? '' : (npsn || '');
+    if (nameField) nameField.value = nama;
+
+    if (!editSekolahSelect) return;
+
+    editSekolahSelect.clear(true);
+
+    if (nama === '') return;
+
+    if (sekolahId) {
+        var value = String(sekolahId);
+        editSekolahSelect.addOption({
+            id: value,
+            record_id: Number(sekolahId),
+            text: nama,
+            npsn: npsn || ''
+        });
+        editSekolahSelect.setValue(value, true);
+    } else {
+        editSekolahSelect.addOption({ id: nama, text: nama });
+        editSekolahSelect.setValue(nama, true);
+    }
+}

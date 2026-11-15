@@ -43,35 +43,54 @@ class FormulirService
         }
     }
 
-    public function updateSekolah(int $siswaId, string $namaSekolah, string $alamatSekolah): void
-    {
-        $namaSekolah   = trim($namaSekolah);
+    /**
+     * Menyimpan data sekolah asal siswa.
+     *
+     * Pilihan dari autocomplete diverifikasi ulang di server: ID sekolah,
+     * NPSN, lalu nama. Bila tidak ada yang cocok, dibuat entri manual baru
+     * sehingga sekolah di luar data induk tetap bisa diinput.
+     */
+    public function updateSekolah(
+        int $siswaId,
+        ?int $sekolahIdInput,
+        ?string $npsn,
+        string $namaSekolah,
+        string $alamatSekolah
+    ): void {
+        $namaSekolah   = trim((string) preg_replace('/\s+/u', ' ', $namaSekolah));
         $alamatSekolah = trim($alamatSekolah);
+
+        if ($namaSekolah === '') {
+            throw new \RuntimeException('Nama sekolah asal wajib diisi.');
+        }
 
         $this->db->transBegin();
 
-        $existing = $this->sekolahModel->where('LOWER(nama_sekolah)', strtolower($namaSekolah))->first();
+        try {
+            $sekolahId = $this->sekolahModel->resolveExistingId($sekolahIdInput, $npsn, $namaSekolah);
 
-        if ($existing) {
-            $sekolahId = $existing['id'];
-        } else {
-            $this->sekolahModel->insert([
-                'nama_sekolah'   => $namaSekolah,
+            if ($sekolahId === null) {
+                $sekolahId = $this->sekolahModel->getOrCreateByName($namaSekolah, 'manual');
+            }
+
+            $this->siswaModel->update($siswaId, [
+                'sekolah_id'     => $sekolahId,
+                'alamat_sekolah' => $alamatSekolah,
             ]);
-            $sekolahId = $this->sekolahModel->getInsertID();
-        }
 
-        $this->siswaModel->update($siswaId, [
-            'sekolah_id'     => $sekolahId,
-            'alamat_sekolah' => $alamatSekolah,
-        ]);
+            if ($this->db->transStatus() === false) {
+                throw new \RuntimeException('Gagal menyimpan data sekolah. Silakan coba lagi.');
+            }
 
-        if ($this->db->transStatus() === false) {
+            $this->db->transCommit();
+        } catch (\RuntimeException $e) {
             $this->db->transRollback();
+            throw $e;
+        } catch (\Throwable $e) {
+            $this->db->transRollback();
+            log_message('error', 'Gagal menyimpan sekolah siswa: {message}', ['message' => $e->getMessage()]);
             throw new \RuntimeException('Gagal menyimpan data sekolah. Silakan coba lagi.');
         }
-
-        $this->db->transCommit();
     }
 
     public function updateOrangTua(int $siswaId, array $data): void

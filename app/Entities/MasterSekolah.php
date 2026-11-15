@@ -7,6 +7,8 @@ use App\Entities\Entity;
 class MasterSekolah extends Entity
 {
     protected $casts = [
-        'id' => 'integer',
+        'id'          => 'integer',
+        'npsn'        => 'string',
+        'imported_at' => 'datetime',
     ];
 }

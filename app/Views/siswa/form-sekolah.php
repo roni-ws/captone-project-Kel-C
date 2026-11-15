@@ -26,13 +26,23 @@ Asal Sekolah (Langkah 2 dari 4)
                 <label class="font-label-bold text-body-sm text-on-surface" for="nama_sekolah">Nama Sekolah Asal <span class="text-error">*</span></label>
                 <div class="relative z-10">
                     <span class="material-symbols-outlined absolute left-sm top-[14px] text-outline-variant pointer-events-none z-20" style="font-size: 20px;">school</span>
-                    <select id="nama_sekolah" name="nama_sekolah" required class="w-full" placeholder="Ketik nama sekolah Anda...">
-                        <?php $oldValue = esc(old('nama_sekolah', $sekolah['nama_sekolah'] ?? '')); ?>
-                        <?php if ($oldValue): ?>
-                            <option value="<?= $oldValue ?>" selected><?= $oldValue ?></option>
-                        <?php endif; ?>
-                    </select>
+                    <input type="hidden" id="sekolah_id" name="sekolah_id" value="<?= esc(old('sekolah_id', $sekolah['id'] ?? '')) ?>">
+                    <input type="hidden" id="npsn" name="npsn" value="<?= esc(old('npsn', $sekolah['npsn'] ?? '')) ?>">
+                    <?php $oldNama = (string) old('nama_sekolah', $sekolah['nama_sekolah'] ?? ''); ?>
+                    <?php $oldId   = (string) old('sekolah_id', $sekolah['id'] ?? ''); ?>
+                    <input type="hidden" id="nama_sekolah_value" name="nama_sekolah" value="<?= esc($oldNama) ?>">
+                    <select id="nama_sekolah" required class="w-full" placeholder="Ketik nama sekolah Anda..."></select>
+                    <?php if ($oldNama !== ''): ?>
+                        <script id="sekolah-awal" type="application/json"><?= json_encode([
+                            'id'   => $oldId,
+                            'text' => $oldNama,
+                            'npsn' => (string) ($sekolah['npsn'] ?? ''),
+                        ], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?></script>
+                    <?php endif; ?>
                 </div>
+                <p class="font-caption text-caption text-on-surface-variant">
+                    Ketik minimal 3 karakter. Bila sekolah tidak ditemukan, lanjutkan mengetik nama sekolah secara lengkap.
+                </p>
                 <?php if (isset($errors['nama_sekolah'])): ?>
                     <span class="text-xs text-error mt-xs font-semibold"><?= esc($errors['nama_sekolah']) ?></span>
                 <?php endif; ?>
@@ -44,8 +54,11 @@ Asal Sekolah (Langkah 2 dari 4)
                 <div class="relative z-0">
                     <span class="material-symbols-outlined absolute left-sm top-4 text-outline-variant pointer-events-none" style="font-size: 20px;">location_on</span>
                     <textarea class="w-full pl-10 pr-sm py-3 border <?= isset($errors['alamat_sekolah']) ? 'border-error' : 'border-outline' ?> rounded-lg bg-surface font-body-md text-body-md text-on-surface placeholder:text-outline-variant focus:border-primary focus:ring-2 focus:ring-tertiary-fixed-dim/30 transition-all min-h-[100px]" 
-                              id="alamat_sekolah" name="alamat_sekolah" placeholder="Nama jalan, kota/kabupaten, dan provinsi sekolah asal" required><?= esc(old('alamat_sekolah', $sekolah['alamat_sekolah'] ?? '')) ?></textarea>
+                              id="alamat_sekolah" name="alamat_sekolah" placeholder="Nama jalan, kelurahan, kecamatan, kabupaten, dan provinsi sekolah asal" required><?= esc(old('alamat_sekolah', $sekolah['alamat_sekolah'] ?? '')) ?></textarea>
                 </div>
+                <p class="font-caption text-caption text-on-surface-variant">
+                    Alamat terisi otomatis saat Anda memilih sekolah dari daftar. Silakan lengkapi atau perbaiki bila perlu.
+                </p>
                 <?php if (isset($errors['alamat_sekolah'])): ?>
                     <span class="text-xs text-error mt-xs font-semibold"><?= esc($errors['alamat_sekolah']) ?></span>
                 <?php endif; ?>
@@ -59,6 +72,9 @@ Asal Sekolah (Langkah 2 dari 4)
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+<script>
+    window.BASE_URL = '<?= base_url() ?>';
+</script>
 <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 <style>

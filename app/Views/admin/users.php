@@ -72,12 +72,12 @@
             <table id="users-table" class="w-full text-left border-collapse min-w-[800px]" style="width:100%">
                 <thead>
                     <tr class="bg-surface-container-low border-b border-outline-variant">
-                        <th class="p-4 font-semibold text-label-bold text-primary text-xs uppercase tracking-wider w-16">No</th>
-                        <th class="p-4 font-semibold text-label-bold text-primary text-xs uppercase tracking-wider">Nama Staff (Username)</th>
-                        <th class="p-4 font-semibold text-label-bold text-primary text-xs uppercase tracking-wider">Email Resmi</th>
-                        <th class="p-4 font-semibold text-label-bold text-primary text-xs uppercase tracking-wider w-36">Peran (Role)</th>
-                        <th class="p-4 font-semibold text-label-bold text-primary text-xs uppercase tracking-wider w-44">Tgl Dibuat</th>
-                        <th class="p-4 font-semibold text-label-bold text-primary text-xs uppercase tracking-wider text-right w-40">Aksi</th>
+                        <th class="p-3 font-semibold text-label-bold text-primary text-xs uppercase tracking-wider w-16">No</th>
+                        <th class="p-3 font-semibold text-label-bold text-primary text-xs uppercase tracking-wider">Nama Staff (Username)</th>
+                        <th class="p-3 font-semibold text-label-bold text-primary text-xs uppercase tracking-wider">Email Resmi</th>
+                        <th class="p-3 font-semibold text-label-bold text-primary text-xs uppercase tracking-wider w-36">Peran (Role)</th>
+                        <th class="p-3 font-semibold text-label-bold text-primary text-xs uppercase tracking-wider w-44">Tgl Dibuat</th>
+                        <th class="p-3 font-semibold text-label-bold text-primary text-xs uppercase tracking-wider text-center w-40">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -91,8 +91,8 @@
                             $inisial = strtoupper(mb_substr($username, 0, 2));
 
                             $roleClass = match($roleName) {
-                                'ADMIN'       => 'bg-tertiary-container text-on-tertiary-container border border-on-tertiary-container/10',
-                                'PANITIA'     => 'bg-primary-container text-on-primary-container border border-on-primary-container/10',
+                                'ADMIN'       => 'bg-tertiary-container text-on-tertiary-container',
+                                'PANITIA'     => 'bg-primary-container text-on-primary-container',
                                 default       => 'bg-surface-container text-on-surface-variant border border-outline-variant/30',
                             };
                             $roleIcon = match($roleName) {
@@ -105,15 +105,15 @@
                             $avatarColors = ['bg-primary-container text-on-primary-container', 'bg-secondary-container text-on-secondary-container', 'bg-tertiary-container text-on-tertiary-container', 'bg-surface-container-high text-primary'];
                             $avatarClass  = $avatarColors[$i % count($avatarColors)];
                         ?>
-                        <tr class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+                        <tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors">
                             <!-- No -->
-                            <td class="p-4 text-body-sm text-on-surface-variant">
+                            <td class="p-3 text-body-sm text-on-surface-variant">
                                 <?= $i + 1 ?>
                             </td>
                             <!-- Username -->
-                            <td class="p-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-full <?= $avatarClass ?> flex items-center justify-center font-bold text-xs shrink-0">
+                            <td class="p-3">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-full <?= $avatarClass ?> flex items-center justify-center font-bold text-xs shrink-0">
                                         <?= $inisial ?>
                                     </div>
                                     <div class="min-w-0">
@@ -127,42 +127,42 @@
                                 </div>
                             </td>
                             <!-- Email -->
-                            <td class="p-4 text-body-sm text-on-surface">
+                            <td class="p-3 text-body-sm text-on-surface">
                                 <?= $email ?>
                             </td>
                             <!-- Role Badge -->
-                            <td class="p-4">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-caption font-bold <?= $roleClass ?>">
+                            <td class="p-3">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold whitespace-nowrap <?= $roleClass ?>">
                                     <span class="material-symbols-outlined text-[14px]"><?= $roleIcon ?></span>
                                     <?= $roleName ?>
                                 </span>
                             </td>
                             <!-- Created At -->
-                            <td class="p-4 text-body-sm text-on-surface-variant whitespace-nowrap">
+                            <td class="p-3 text-body-sm text-on-surface-variant whitespace-nowrap">
                                 <?= date('d M Y, H:i', strtotime($staff['created_at'])) ?>
                             </td>
                             <!-- Actions -->
-                            <td class="p-4 text-right">
-                                <div class="flex items-center justify-end gap-1">
+                            <td class="p-3 text-center">
+                                <div class="flex items-center justify-center gap-0">
                                     <!-- Edit Akun (data & kata sandi) -->
                                     <button onclick="openEditModal(<?= (int) $staff['id'] ?>, '<?= esc($username, 'js') ?>', '<?= esc($email, 'js') ?>', '<?= esc($staff['role'], 'js') ?>', <?= $isSelf ? 'true' : 'false' ?>)"
-                                            class="p-1.5 text-primary hover:bg-primary-container/20 rounded-full transition-colors"
+                                            class="p-1 text-primary hover:bg-primary-container/20 rounded-full transition-colors"
                                             title="Ubah Data Akun &amp; Kata Sandi">
-                                        <span class="material-symbols-outlined text-[18px]">manage_accounts</span>
+                                        <span class="material-symbols-outlined" style="font-size:16px">manage_accounts</span>
                                     </button>
                                     
                                     <!-- Delete Staff: hanya admin, dan tidak untuk akun sendiri -->
                                     <?php if ($isAdmin): ?>
                                         <?php if ($isSelf): ?>
-                                            <button class="p-1.5 text-outline opacity-40 cursor-not-allowed rounded-full"
+                                            <button class="p-1 text-outline opacity-40 cursor-not-allowed rounded-full"
                                                     title="Tidak dapat menghapus akun Anda sendiri" disabled>
-                                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                                                <span class="material-symbols-outlined" style="font-size:16px">delete</span>
                                             </button>
                                         <?php else: ?>
                                             <button onclick="confirmDelete(<?= (int) $staff['id'] ?>, '<?= esc($username, 'js') ?>')"
-                                                    class="p-1.5 text-error hover:bg-error-container/20 rounded-full transition-colors"
+                                                    class="p-1 text-error hover:bg-error-container/20 rounded-full transition-colors"
                                                     title="Hapus Akun Staff">
-                                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                                                <span class="material-symbols-outlined" style="font-size:16px">delete</span>
                                             </button>
                                         <?php endif; ?>
                                     <?php endif; ?>
